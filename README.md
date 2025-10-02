@@ -1,51 +1,39 @@
-# 📄 Invoice Extractor - AI-Powered Document Analysis
+# Invoice Analyzer App
 
-A modern Flask web application that uses Google's Generative AI (Gemini) to extract and analyze data from invoice images. Built with Docker, CI/CD, and deployed on Render.
+A Flask-based web application that uses Google's Generative AI (Gemma) to analyze invoice images and answer questions about them.
 
-## ✨ Features
+## Features
 
-- 🔍 **AI-Powered Analysis**: Uses Google's Gemini models for intelligent invoice data extraction
-- 📱 **Responsive Design**: Modern, mobile-friendly interface
-- 🚀 **Quick Actions**: Pre-defined questions for common invoice queries
-- ⚙️ **Model Selection**: Choose from different Gemini models based on your needs
-- 📊 **Analytics Dashboard**: Track processing times and success rates
-- 🔐 **Secure API Key Management**: Safe storage and testing of API keys
-- 🐳 **Docker Support**: Containerized for easy deployment
-- 🔄 **CI/CD Pipeline**: Automated testing and deployment with GitHub Actions
+- Upload invoice images
+- AI-powered analysis using Google's Gemma model
+- Interactive Q&A about invoice content
+- Settings page for API key management
+- Analytics dashboard
+- Responsive web interface
 
-## 🛠️ Tech Stack
+## Tech Stack
 
-- **Backend**: Flask (Python 3.10)
-- **AI**: Google Generative AI (Gemini models)
-- **Frontend**: HTML5, CSS3, JavaScript
-- **Containerization**: Docker & Docker Compose
+- **Backend**: Flask (Python)
+- **AI Model**: Google Generative AI (Gemma-3-27b-it)
+- **Frontend**: HTML, CSS, JavaScript
+- **Image Processing**: Pillow (PIL)
+- **Deployment**: Docker, Render
 - **CI/CD**: GitHub Actions
-- **Deployment**: Render
-- **Security**: Environment variables, secure headers
 
-## 🚀 Quick Start
-
-### Prerequisites
-
-- Python 3.10+
-- Docker & Docker Compose (optional)
-- Google API Key ([Get one here](https://makersuite.google.com/app/apikey))
+## Quick Start
 
 ### Local Development
 
 1. **Clone the repository**
    ```bash
    git clone <your-repo-url>
-   cd invoice-extractor
+   cd project3
    ```
 
-2. **Set up environment**
+2. **Create virtual environment**
    ```bash
-   # Copy environment template
-   cp .env.example .env
-   
-   # Edit .env and add your Google API key
-   GOOGLE_API_KEY=your_google_api_key_here
+   python -m venv venv
+   source venv/bin/activate  # On Windows: venv\Scripts\activate
    ```
 
 3. **Install dependencies**
@@ -53,37 +41,46 @@ A modern Flask web application that uses Google's Generative AI (Gemini) to extr
    pip install -r requirements.txt
    ```
 
-4. **Run the application**
+4. **Set up environment variables**
+   ```bash
+   cp .env.example .env
+   # Edit .env and add your Google API key
+   ```
+
+5. **Run the application**
    ```bash
    python app.py
    ```
 
-   Visit `http://localhost:5000` to see the application.
+6. **Access the app**
+   Open http://localhost:5000 in your browser
 
 ### Docker Development
 
-1. **Build and run with Docker Compose**
+1. **Build the Docker image**
    ```bash
-   docker-compose up --build
+   docker build -t invoice-analyzer .
    ```
 
-2. **Or build and run with Docker**
+2. **Run the container**
    ```bash
-   # Build the image
-   docker build -t invoice-extractor .
-   
-   # Run the container
-   docker run -p 5000:5000 --env-file .env invoice-extractor
+   docker run -p 5000:5000 --env-file .env invoice-analyzer
    ```
 
-## 🌐 Deployment on Render
+## Deployment on Render
 
-### Method 1: Direct GitHub Integration (Recommended)
+### Prerequisites
+
+1. GitHub repository with your code
+2. Google AI API key
+3. Render account (free tier available)
+
+### Steps
 
 1. **Push your code to GitHub**
    ```bash
    git add .
-   git commit -m "Initial commit with Docker and CI/CD setup"
+   git commit -m "Add Docker and CI/CD setup"
    git push origin main
    ```
 
@@ -91,185 +88,134 @@ A modern Flask web application that uses Google's Generative AI (Gemini) to extr
    - Go to [Render Dashboard](https://dashboard.render.com)
    - Click "New +" → "Web Service"
    - Connect your GitHub repository
-   - Select the repository and branch
 
-3. **Configure deployment**
-   - **Name**: `invoice-extractor`
+3. **Configure the service**
+   - **Name**: `invoice-analyzer-app`
    - **Environment**: `Docker`
    - **Dockerfile Path**: `./Dockerfile`
-   - **Docker Context**: `.`
-   - **Plan**: Free
+   - **Branch**: `main`
+   - **Plan**: `Free`
 
 4. **Set environment variables**
-   - `GOOGLE_API_KEY`: Your Google API key
+   - `GOOGLE_API_KEY`: Your Google AI API key
+   - `SECRET_KEY`: A secure random string
    - `FLASK_ENV`: `production`
-   - `SECRET_KEY`: Generate a secure secret key
+   - `PORT`: `5000`
 
 5. **Deploy**
    - Click "Create Web Service"
-   - Render will automatically build and deploy your application
+   - Render will automatically build and deploy your app
 
-### Method 2: Using render.yaml (Advanced)
+### CI/CD with GitHub Actions
 
-The project includes a `render.yaml` file for advanced configuration:
+The repository includes a GitHub Actions workflow that:
 
-```yaml
-services:
-  - type: web
-    name: invoice-extractor
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
-    plan: free
-    region: oregon
-    branch: main
-    # ... additional configuration
-```
+1. **Tests** the application on every push/PR
+2. **Builds** Docker image on main branch pushes
+3. **Pushes** to GitHub Container Registry
+4. **Deploys** to Render automatically
 
-## 🔄 CI/CD Pipeline
+#### Required Secrets
 
-The project includes a comprehensive GitHub Actions workflow (`.github/workflows/ci-cd.yml`) that:
-
-### Features
-- ✅ **Automated Testing**: Runs pytest and flake8 on every PR
-- 🐳 **Docker Build**: Builds and pushes Docker images to GitHub Container Registry
-- 🔒 **Security Scanning**: Uses Trivy for vulnerability scanning
-- 📊 **Code Coverage**: Generates and uploads coverage reports
-- 🚀 **Auto Deployment**: Deploys to Render on main branch pushes
-
-### Workflow Steps
-1. **Test**: Lint, test, and generate coverage reports
-2. **Build**: Create Docker image and push to registry
-3. **Deploy**: Automatically deploy to Render
-4. **Security**: Scan for vulnerabilities
-
-### Required Secrets
 Add these secrets to your GitHub repository:
 
 - `RENDER_SERVICE_ID`: Your Render service ID
 - `RENDER_API_KEY`: Your Render API key
 
-## 📁 Project Structure
+To get these:
+1. Go to your Render service settings
+2. Find "Service ID" in the service details
+3. Generate API key in Render account settings
 
-```
-invoice-extractor/
-├── .github/
-│   └── workflows/
-│       └── ci-cd.yml          # GitHub Actions CI/CD pipeline
-├── static/
-│   └── styles.css             # Application styles
-├── templates/
-│   ├── index.html             # Main application page
-│   ├── analytics.html         # Analytics dashboard
-│   └── settings.html          # Settings page
-├── app.py                     # Main Flask application
-├── requirements.txt           # Python dependencies
-├── Dockerfile                 # Docker configuration
-├── docker-compose.yml         # Docker Compose for development
-├── render.yaml               # Render deployment configuration
-├── .env.example              # Environment variables template
-├── .gitignore                # Git ignore rules
-└── README.md                 # This file
-```
-
-## 🔧 Configuration
-
-### Environment Variables
+## Environment Variables
 
 | Variable | Description | Required | Default |
 |----------|-------------|----------|---------|
-| `GOOGLE_API_KEY` | Google Generative AI API key | Yes | - |
-| `FLASK_ENV` | Flask environment | No | `development` |
+| `GOOGLE_API_KEY` | Google AI API key | Yes | - |
 | `SECRET_KEY` | Flask secret key | Yes | - |
-| `MAX_CONTENT_LENGTH` | Max file upload size | No | `10485760` (10MB) |
+| `FLASK_ENV` | Flask environment | No | `development` |
+| `PORT` | Server port | No | `5000` |
+| `HOST` | Server host | No | `0.0.0.0` |
 
-### Supported AI Models
+## API Endpoints
 
-- **Gemma 3 27B IT** (Recommended): Best accuracy
-- **Gemma 3 12B IT** (Balanced): Good balance of speed and accuracy
-- **Gemma 3 4B IT** (Fast): Fastest processing
-- **Gemini 2.0 Flash** (Experimental): Latest features
-- **Gemini 2.5 Flash** (Preview): Preview features
+- `GET /` - Home page
+- `GET /settings` - Settings page
+- `GET /analytics` - Analytics dashboard
+- `POST /save-api-key` - Save API key
+- `POST /test-api-key` - Test API key
+- `POST /analyze` - Analyze invoice image
 
-## 🧪 Testing
+## Project Structure
 
-```bash
-# Install test dependencies
-pip install pytest pytest-cov flake8
-
-# Run tests
-pytest
-
-# Run with coverage
-pytest --cov=app --cov-report=html
-
-# Run linting
-flake8 .
+```
+project3/
+├── app.py                 # Main Flask application
+├── requirements.txt       # Python dependencies
+├── Dockerfile            # Docker configuration
+├── .dockerignore         # Docker ignore file
+├── render.yaml           # Render deployment config
+├── .env.example          # Environment variables template
+├── .github/
+│   └── workflows/
+│       └── ci-cd.yml     # GitHub Actions workflow
+├── static/
+│   └── styles.css        # CSS styles
+└── templates/
+    ├── index.html        # Main page
+    ├── settings.html     # Settings page
+    └── analytics.html    # Analytics page
 ```
 
-## 📊 Monitoring & Analytics
+## Free Deployment Options
 
-The application includes built-in analytics tracking:
-- Processing times
-- Success rates
-- Confidence scores
-- Usage statistics
+### Render (Recommended)
+- **Free tier**: 750 hours/month
+- **Features**: Auto-deploy, custom domains, SSL
+- **Limitations**: Sleeps after 15 minutes of inactivity
 
-Access analytics at `/analytics` endpoint.
+### Other Free Options
+- **Railway**: 500 hours/month free
+- **Fly.io**: Limited free tier
+- **Heroku**: No longer free
+- **Vercel**: Good for static sites
+- **Netlify**: Good for static sites
 
-## 🔒 Security Features
-
-- Environment variable protection
-- Secure session management
-- File upload validation
-- Security headers (HSTS, XSS protection, etc.)
-- Non-root Docker user
-- Vulnerability scanning in CI/CD
-
-## 🐛 Troubleshooting
+## Troubleshooting
 
 ### Common Issues
 
-1. **API Key Not Working**
-   - Verify your Google API key is correct
-   - Check if the API key has proper permissions
-   - Ensure billing is enabled for your Google Cloud project
+1. **API Key Error**
+   - Ensure `GOOGLE_API_KEY` is set correctly
+   - Check API key permissions in Google AI Studio
 
 2. **Docker Build Fails**
-   - Check if all dependencies are in `requirements.txt`
-   - Verify Dockerfile syntax
-   - Ensure proper file permissions
+   - Check Dockerfile syntax
+   - Ensure all dependencies are in requirements.txt
 
-3. **Render Deployment Issues**
-   - Check environment variables are set correctly
-   - Verify Dockerfile path in Render settings
-   - Check Render logs for specific error messages
+3. **Render Deployment Fails**
+   - Check environment variables
+   - Verify Dockerfile path
+   - Check build logs in Render dashboard
+
+4. **Image Upload Issues**
+   - Ensure file size limits
+   - Check image format support
 
 ### Getting Help
 
-- Check the [Issues](https://github.com/your-username/invoice-extractor/issues) page
-- Review Render deployment logs
-- Check GitHub Actions workflow logs
+- Check the [Render Documentation](https://render.com/docs)
+- Review [GitHub Actions Documentation](https://docs.github.com/en/actions)
+- Check [Flask Documentation](https://flask.palletsprojects.com/)
 
-## 🤝 Contributing
+## Contributing
 
 1. Fork the repository
-2. Create a feature branch (`git checkout -b feature/amazing-feature`)
-3. Commit your changes (`git commit -m 'Add some amazing feature'`)
-4. Push to the branch (`git push origin feature/amazing-feature`)
-5. Open a Pull Request
+2. Create a feature branch
+3. Make your changes
+4. Add tests if applicable
+5. Submit a pull request
 
-## 📄 License
+## License
 
-This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
-
-## 🙏 Acknowledgments
-
-- [Google Generative AI](https://ai.google.dev/) for the AI models
-- [Flask](https://flask.palletsprojects.com/) for the web framework
-- [Render](https://render.com/) for hosting
-- [GitHub Actions](https://github.com/features/actions) for CI/CD
-
----
-
-**Made with ❤️ for efficient invoice processing**
+This project is licensed under the MIT License.

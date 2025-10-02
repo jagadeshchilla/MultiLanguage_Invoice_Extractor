@@ -1,6 +1,6 @@
 services:
   - type: web
-    name: invoice-extractor
+    name: invoice-analyzer-app
     env: docker
     dockerfilePath: ./Dockerfile
     dockerContext: .
@@ -11,37 +11,15 @@ services:
     startCommand: ""
     healthCheckPath: /
     envVars:
-      - key: FLASK_ENV
-        value: production
       - key: GOOGLE_API_KEY
         sync: false
-      - key: SECRET_KEY
-        generateValue: true
-    scaling:
-      minInstances: 1
-      maxInstances: 1
-    disk:
-      name: invoice-extractor-disk
-      mountPath: /app/data
-      sizeGB: 1
-    headers:
-      - path: /*
-        name: X-Frame-Options
-        value: DENY
-      - path: /*
-        name: X-Content-Type-Options
-        value: nosniff
-      - path: /*
-        name: X-XSS-Protection
-        value: 1; mode=block
-      - path: /*
-        name: Strict-Transport-Security
-        value: max-age=31536000; includeSubDomains
+      - key: FLASK_ENV
+        value: production
+      - key: PORT
+        value: 5000
     autoDeploy: true
     pullRequestPreviewsEnabled: true
-    buildFilter:
-      paths:
-        - "**"
-        - "!docs/**"
-        - "!tests/**"
-        - "!*.md"
+    disk:
+      name: invoice-analyzer-disk
+      mountPath: /app/data
+      sizeGB: 1
