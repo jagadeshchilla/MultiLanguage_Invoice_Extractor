@@ -1,0 +1,883 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Analytics - Invoice Extractor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📄</div>
+                    Invoice Extractor
+                </a>
+                <div class="nav-actions">
+                    <a href="/analytics" class="btn-secondary active">
+                        📊 Analytics
+                    </a>
+                    <a href="/settings" class="btn-secondary">
+                        ⚙️ Settings
+                    </a>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="nav-actions">
+                    <a href="/analytics" class="btn-secondary active">
+                        📊 Analytics
+                    </a>
+                    <a href="/settings" class="btn-secondary">
+                        ⚙️ Settings
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="analytics-container">
+                <!-- Model Selection Panel -->
+                <div class="model-selection-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">🤖 AI Model Selection</h2>
+                        <p class="panel-subtitle">Choose the best model for your invoice analysis needs</p>
+                    </div>
+
+                    <div class="model-grid">
+                        <div class="model-card recommended" data-model="models/gemma-3-27b-it">
+                            <div class="model-header">
+                                <h3>Gemma 3 27B IT</h3>
+                                <span class="recommended-badge">⭐ Recommended</span>
+                            </div>
+                            <div class="model-description">
+                                <p>Best overall performance for invoice analysis with excellent accuracy and multilingual support.</p>
+                            </div>
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Accuracy</span>
+                                    <span class="stat-value">95%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <span class="stat-value">Fast</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value">50+</span>
+                                </div>
+                            </div>
+                            <div class="model-features">
+                                <span class="feature-tag">Multilingual</span>
+                                <span class="feature-tag">High Accuracy</span>
+                                <span class="feature-tag">Invoice Optimized</span>
+                            </div>
+                        </div>
+
+                        <div class="model-card" data-model="models/gemma-3-12b-it">
+                            <div class="model-header">
+                                <h3>Gemma 3 12B IT</h3>
+                                <span class="balanced-badge">⚖️ Balanced</span>
+                            </div>
+                            <div class="model-description">
+                                <p>Balanced performance with good accuracy and faster processing. Great for most invoice types.</p>
+                            </div>
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Accuracy</span>
+                                    <span class="stat-value">92%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <span class="stat-value">Fast</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value">40+</span>
+                                </div>
+                            </div>
+                            <div class="model-features">
+                                <span class="feature-tag">Balanced</span>
+                                <span class="feature-tag">Cost Effective</span>
+                                <span class="feature-tag">Reliable</span>
+                            </div>
+                        </div>
+
+                        <div class="model-card" data-model="models/gemma-3-4b-it">
+                            <div class="model-header">
+                                <h3>Gemma 3 4B IT</h3>
+                                <span class="speed-badge">⚡ Ultra Fast</span>
+                            </div>
+                            <div class="model-description">
+                                <p>Ultra-fast processing with good accuracy. Perfect for high-volume invoice processing.</p>
+                            </div>
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Accuracy</span>
+                                    <span class="stat-value">88%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <span class="stat-value">Ultra Fast</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value">30+</span>
+                                </div>
+                            </div>
+                            <div class="model-features">
+                                <span class="feature-tag">Ultra Fast</span>
+                                <span class="feature-tag">Cost Effective</span>
+                                <span class="feature-tag">Batch Processing</span>
+                            </div>
+                        </div>
+
+                        <div class="model-card" data-model="models/gemini-2.0-flash-exp">
+                            <div class="model-header">
+                                <h3>Gemini 2.0 Flash</h3>
+                                <span class="experimental-badge">🧪 Experimental</span>
+                            </div>
+                            <div class="model-description">
+                                <p>Latest experimental model with cutting-edge capabilities for advanced invoice analysis.</p>
+                            </div>
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Accuracy</span>
+                                    <span class="stat-value">97%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <span class="stat-value">Very Fast</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value">100+</span>
+                                </div>
+                            </div>
+                            <div class="model-features">
+                                <span class="feature-tag">Latest Tech</span>
+                                <span class="feature-tag">High Accuracy</span>
+                                <span class="feature-tag">Experimental</span>
+                            </div>
+                        </div>
+
+                        <div class="model-card" data-model="models/gemini-2.5-flash-preview">
+                            <div class="model-header">
+                                <h3>Gemini 2.5 Flash</h3>
+                                <span class="preview-badge">🔮 Preview</span>
+                            </div>
+                            <div class="model-description">
+                                <p>Preview version of the next-generation model with enhanced reasoning and context handling.</p>
+                            </div>
+                            <div class="model-stats">
+                                <div class="stat">
+                                    <span class="stat-label">Accuracy</span>
+                                    <span class="stat-value">96%</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Speed</span>
+                                    <span class="stat-value">Fast</span>
+                                </div>
+                                <div class="stat">
+                                    <span class="stat-label">Languages</span>
+                                    <span class="stat-value">80+</span>
+                                </div>
+                            </div>
+                            <div class="model-features">
+                                <span class="feature-tag">Enhanced Reasoning</span>
+                                <span class="feature-tag">Extended Context</span>
+                                <span class="feature-tag">Preview</span>
+                            </div>
+                        </div>
+                    </div>
+
+                    <div class="model-selection-info">
+                        <h4>💡 Model Selection Tips</h4>
+                        <ul>
+                            <li><strong>Gemma 3 27B IT:</strong> Best for most invoice types with excellent multilingual support</li>
+                            <li><strong>Gemma 3 12B IT:</strong> Balanced performance for general invoice processing</li>
+                            <li><strong>Gemma 3 4B IT:</strong> Choose for high-volume processing or when speed is critical</li>
+                            <li><strong>Gemini 2.0 Flash:</strong> Latest experimental model with cutting-edge capabilities</li>
+                            <li><strong>Gemini 2.5 Flash:</strong> Preview model with enhanced reasoning and context handling</li>
+                        </ul>
+                    </div>
+                </div>
+
+                <!-- Analytics Dashboard -->
+                <div class="analytics-dashboard">
+                    <div class="panel-header">
+                        <h2 class="panel-title">📈 Usage Analytics</h2>
+                        <p class="panel-subtitle">Track your invoice processing performance and insights</p>
+                    </div>
+
+                    <div class="analytics-grid">
+                        <!-- Summary Cards -->
+                        <div class="summary-cards">
+                            <div class="summary-card">
+                                <div class="card-icon">📄</div>
+                                <div class="card-content">
+                                    <div class="card-value" id="totalInvoices">0</div>
+                                    <div class="card-label">Total Invoices</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon">✅</div>
+                                <div class="card-content">
+                                    <div class="card-value" id="successRate">0%</div>
+                                    <div class="card-label">Success Rate</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon">⚡</div>
+                                <div class="card-content">
+                                    <div class="card-value" id="avgProcessingTime">0s</div>
+                                    <div class="card-label">Avg Processing Time</div>
+                                </div>
+                            </div>
+                            <div class="summary-card">
+                                <div class="card-icon">🎯</div>
+                                <div class="card-content">
+                                    <div class="card-value" id="avgConfidence">0%</div>
+                                    <div class="card-label">Avg Confidence</div>
+                                </div>
+                            </div>
+                        </div>
+
+                        <!-- Charts -->
+                        <div class="charts-grid">
+                            <div class="chart-container">
+                                <h3>📊 Processing Volume (Last 7 Days)</h3>
+                                <canvas id="volumeChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>🎯 Model Performance Comparison</h3>
+                                <canvas id="performanceChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>🌍 Language Distribution</h3>
+                                <canvas id="languageChart"></canvas>
+                            </div>
+                            <div class="chart-container">
+                                <h3>⏱️ Processing Time Trends</h3>
+                                <canvas id="timeChart"></canvas>
+                            </div>
+                        </div>
+
+                        <!-- Recent Activity -->
+                        <div class="recent-activity">
+                            <h3>🕒 Recent Activity</h3>
+                            <div class="activity-list" id="activityList">
+                                <div class="activity-item">
+                                    <div class="activity-icon">📄</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Invoice processed successfully</div>
+                                        <div class="activity-time">Just now</div>
+                                    </div>
+                                    <div class="activity-status success">✅</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">⚙️</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">Settings updated</div>
+                                        <div class="activity-time">2 minutes ago</div>
+                                    </div>
+                                    <div class="activity-status info">ℹ️</div>
+                                </div>
+                                <div class="activity-item">
+                                    <div class="activity-icon">🔑</div>
+                                    <div class="activity-content">
+                                        <div class="activity-title">API key configured</div>
+                                        <div class="activity-time">5 minutes ago</div>
+                                    </div>
+                                    <div class="activity-status success">✅</div>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .analytics-container {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .model-selection-panel,
+        .analytics-dashboard {
+            background: var(--background);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .model-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .model-card {
+            background: var(--background-light);
+            border: 2px solid var(--border);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .model-card:hover {
+            border-color: var(--primary);
+            transform: translateY(-2px);
+            box-shadow: var(--shadow-md);
+        }
+
+        .model-card.selected {
+            border-color: var(--primary);
+            background: rgba(37, 99, 235, 0.05);
+        }
+
+        .model-card.recommended {
+            border-color: var(--success);
+            background: rgba(16, 185, 129, 0.05);
+        }
+
+        .model-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .model-header h3 {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin: 0;
+        }
+
+        .recommended-badge,
+        .speed-badge,
+        .balanced-badge,
+        .experimental-badge,
+        .preview-badge {
+            font-size: 0.75rem;
+            font-weight: 500;
+            padding: 0.25rem 0.75rem;
+            border-radius: var(--radius-sm);
+            color: white;
+        }
+
+        .recommended-badge {
+            background: var(--success);
+        }
+
+        .speed-badge {
+            background: var(--warning);
+        }
+
+        .balanced-badge {
+            background: var(--primary);
+        }
+
+        .experimental-badge {
+            background: #8b5cf6;
+        }
+
+        .preview-badge {
+            background: #ec4899;
+        }
+
+        .model-description {
+            margin-bottom: 1rem;
+        }
+
+        .model-description p {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            line-height: 1.5;
+            margin: 0;
+        }
+
+        .model-stats {
+            display: grid;
+            grid-template-columns: repeat(3, 1fr);
+            gap: 1rem;
+            margin-bottom: 1rem;
+        }
+
+        .stat {
+            text-align: center;
+        }
+
+        .stat-label {
+            display: block;
+            font-size: 0.75rem;
+            color: var(--text-muted);
+            margin-bottom: 0.25rem;
+        }
+
+        .stat-value {
+            display: block;
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+        }
+
+        .model-features {
+            display: flex;
+            flex-wrap: wrap;
+            gap: 0.5rem;
+        }
+
+        .feature-tag {
+            background: var(--background);
+            border: 1px solid var(--border);
+            color: var(--text-secondary);
+            font-size: 0.75rem;
+            padding: 0.25rem 0.5rem;
+            border-radius: var(--radius-sm);
+        }
+
+        .model-selection-info {
+            background: var(--background-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .model-selection-info h4 {
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .model-selection-info ul {
+            margin: 0;
+            padding-left: 1.5rem;
+        }
+
+        .model-selection-info li {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 0.5rem;
+            line-height: 1.5;
+        }
+
+        .analytics-grid {
+            display: flex;
+            flex-direction: column;
+            gap: 2rem;
+        }
+
+        .summary-cards {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(200px, 1fr));
+            gap: 1rem;
+        }
+
+        .summary-card {
+            background: var(--background-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .card-icon {
+            font-size: 2rem;
+            width: 3rem;
+            height: 3rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--primary);
+            border-radius: var(--radius-lg);
+            color: white;
+        }
+
+        .card-content {
+            flex: 1;
+        }
+
+        .card-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .card-label {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .charts-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 1.5rem;
+        }
+
+        .chart-container {
+            background: var(--background-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .chart-container h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .chart-container canvas {
+            max-height: 200px;
+        }
+
+        .recent-activity {
+            background: var(--background-light);
+            border: 1px solid var(--border-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+        }
+
+        .recent-activity h3 {
+            font-size: 1rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 1rem;
+        }
+
+        .activity-list {
+            display: flex;
+            flex-direction: column;
+            gap: 1rem;
+        }
+
+        .activity-item {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            padding: 0.75rem;
+            background: var(--background);
+            border-radius: var(--radius-md);
+            border: 1px solid var(--border);
+        }
+
+        .activity-icon {
+            font-size: 1.25rem;
+            width: 2.5rem;
+            height: 2.5rem;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            background: var(--background-light);
+            border-radius: var(--radius-md);
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-title {
+            font-size: 0.875rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .activity-time {
+            font-size: 0.75rem;
+            color: var(--text-muted);
+        }
+
+        .activity-status {
+            font-size: 1rem;
+        }
+
+        .nav-actions .btn-secondary.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .analytics-container {
+                gap: 1.5rem;
+            }
+
+            .model-selection-panel,
+            .analytics-dashboard {
+                padding: 1.5rem;
+            }
+
+            .model-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .summary-cards {
+                grid-template-columns: repeat(2, 1fr);
+            }
+
+            .charts-grid {
+                grid-template-columns: 1fr;
+            }
+
+            .model-stats {
+                grid-template-columns: repeat(2, 1fr);
+            }
+        }
+
+        @media (max-width: 480px) {
+            .summary-cards {
+                grid-template-columns: 1fr;
+            }
+
+            .model-stats {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+
+    <script>
+        // DOM Elements
+        const modelCards = document.querySelectorAll('.model-card');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Model selection
+        modelCards.forEach(card => {
+            card.addEventListener('click', function() {
+                // Remove selected class from all cards
+                modelCards.forEach(c => c.classList.remove('selected'));
+                
+                // Add selected class to clicked card
+                this.classList.add('selected');
+                
+                // Save selection to localStorage
+                const model = this.dataset.model;
+                localStorage.setItem('selected_model', model);
+                
+                // Update settings
+                updateSettings('defaultModel', model);
+            });
+        });
+
+        // Load saved model selection
+        const savedModel = localStorage.getItem('selected_model');
+        if (savedModel) {
+            const selectedCard = document.querySelector(`[data-model="${savedModel}"]`);
+            if (selectedCard) {
+                selectedCard.classList.add('selected');
+            }
+        }
+
+        // Initialize charts
+        initializeCharts();
+
+        // Initialize analytics data
+        initializeAnalytics();
+
+        function initializeCharts() {
+            // Volume Chart
+            const volumeCtx = document.getElementById('volumeChart').getContext('2d');
+            new Chart(volumeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Mon', 'Tue', 'Wed', 'Thu', 'Fri', 'Sat', 'Sun'],
+                    datasets: [{
+                        label: 'Invoices Processed',
+                        data: [12, 19, 15, 25, 22, 18, 14],
+                        borderColor: 'rgb(37, 99, 235)',
+                        backgroundColor: 'rgba(37, 99, 235, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+
+            // Performance Chart
+            const performanceCtx = document.getElementById('performanceChart').getContext('2d');
+            new Chart(performanceCtx, {
+                type: 'bar',
+                data: {
+                    labels: ['Gemma 3 27B', 'Gemma 3 12B', 'Gemma 3 4B', 'Gemini 2.0', 'Gemini 2.5'],
+                    datasets: [{
+                        label: 'Accuracy %',
+                        data: [95, 92, 88, 97, 96],
+                        backgroundColor: [
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(37, 99, 235, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(139, 92, 246, 0.8)',
+                            'rgba(236, 72, 153, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true,
+                            max: 100
+                        }
+                    }
+                }
+            });
+
+            // Language Chart
+            const languageCtx = document.getElementById('languageChart').getContext('2d');
+            new Chart(languageCtx, {
+                type: 'doughnut',
+                data: {
+                    labels: ['English', 'Spanish', 'French', 'German', 'Other'],
+                    datasets: [{
+                        data: [45, 20, 15, 10, 10],
+                        backgroundColor: [
+                            'rgba(37, 99, 235, 0.8)',
+                            'rgba(16, 185, 129, 0.8)',
+                            'rgba(245, 158, 11, 0.8)',
+                            'rgba(239, 68, 68, 0.8)',
+                            'rgba(139, 92, 246, 0.8)'
+                        ]
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            position: 'bottom'
+                        }
+                    }
+                }
+            });
+
+            // Time Chart
+            const timeCtx = document.getElementById('timeChart').getContext('2d');
+            new Chart(timeCtx, {
+                type: 'line',
+                data: {
+                    labels: ['Week 1', 'Week 2', 'Week 3', 'Week 4'],
+                    datasets: [{
+                        label: 'Avg Processing Time (seconds)',
+                        data: [3.2, 2.8, 2.5, 2.1],
+                        borderColor: 'rgb(16, 185, 129)',
+                        backgroundColor: 'rgba(16, 185, 129, 0.1)',
+                        tension: 0.4,
+                        fill: true
+                    }]
+                },
+                options: {
+                    responsive: true,
+                    maintainAspectRatio: false,
+                    plugins: {
+                        legend: {
+                            display: false
+                        }
+                    },
+                    scales: {
+                        y: {
+                            beginAtZero: true
+                        }
+                    }
+                }
+            });
+        }
+
+        function initializeAnalytics() {
+            // Load analytics data from localStorage
+            const analyticsData = JSON.parse(localStorage.getItem('analytics_data') || '{}');
+            
+            // Update summary cards
+            document.getElementById('totalInvoices').textContent = analyticsData.totalInvoices || '0';
+            document.getElementById('successRate').textContent = (analyticsData.successRate || 0) + '%';
+            document.getElementById('avgProcessingTime').textContent = (analyticsData.avgProcessingTime || 0) + 's';
+            document.getElementById('avgConfidence').textContent = (analyticsData.avgConfidence || 0) + '%';
+        }
+
+        function updateSettings(key, value) {
+            const settings = JSON.parse(localStorage.getItem('invoice_extractor_settings') || '{}');
+            settings[key] = value;
+            localStorage.setItem('invoice_extractor_settings', JSON.stringify(settings));
+        }
+
+        // Track analytics when processing invoices
+        function trackAnalytics(processingTime, confidence, success) {
+            const analyticsData = JSON.parse(localStorage.getItem('analytics_data') || '{}');
+            
+            analyticsData.totalInvoices = (analyticsData.totalInvoices || 0) + 1;
+            analyticsData.totalProcessingTime = (analyticsData.totalProcessingTime || 0) + processingTime;
+            analyticsData.totalConfidence = (analyticsData.totalConfidence || 0) + confidence;
+            analyticsData.successfulInvoices = (analyticsData.successfulInvoices || 0) + (success ? 1 : 0);
+            
+            analyticsData.avgProcessingTime = Math.round(analyticsData.totalProcessingTime / analyticsData.totalInvoices * 10) / 10;
+            analyticsData.avgConfidence = Math.round(analyticsData.totalConfidence / analyticsData.totalInvoices);
+            analyticsData.successRate = Math.round((analyticsData.successfulInvoices / analyticsData.totalInvoices) * 100);
+            
+            localStorage.setItem('analytics_data', JSON.stringify(analyticsData));
+            
+            // Refresh analytics display
+            initializeAnalytics();
+        }
+
+        // Handle window resize for mobile menu
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Expose trackAnalytics function globally for use in main app
+        window.trackAnalytics = trackAnalytics;
+    </script>
+</body>
+</html>

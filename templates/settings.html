@@ -1,0 +1,679 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Settings - Invoice Extractor</title>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📄</div>
+                    Invoice Extractor
+                </a>
+                <div class="nav-actions">
+                    <a href="/analytics" class="btn-secondary">
+                        📊 Analytics
+                    </a>
+                    <a href="/settings" class="btn-secondary active">
+                        ⚙️ Settings
+                    </a>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="nav-actions">
+                    <a href="/analytics" class="btn-secondary">
+                        📊 Analytics
+                    </a>
+                    <a href="/settings" class="btn-secondary active">
+                        ⚙️ Settings
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="settings-container">
+                <div class="settings-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">⚙️ Settings</h2>
+                        <p class="panel-subtitle">Configure your API keys and preferences</p>
+                    </div>
+
+                    <!-- API Key Configuration -->
+                    <div class="settings-section">
+                        <h3 class="section-title">🔑 Google API Configuration</h3>
+                        <p class="section-description">
+                            Add your Google Generative AI API key to enable invoice analysis. 
+                            Get your API key from <a href="https://makersuite.google.com/app/apikey" target="_blank" class="link">Google AI Studio</a>.
+                        </p>
+                        
+                        <div class="api-key-form">
+                            <div class="form-group">
+                                <label for="apiKey">API Key</label>
+                                <div class="input-group">
+                                    <input type="password" id="apiKey" placeholder="Enter your Google API key..." class="api-input">
+                                    <button type="button" id="toggleVisibility" class="toggle-btn">👁️</button>
+                                </div>
+                            </div>
+                            
+                            <div class="button-group">
+                                <button type="button" id="testApiKey" class="btn-secondary">
+                                    🧪 Test API Key
+                                </button>
+                                <button type="button" id="saveApiKey" class="btn-primary">
+                                    💾 Save API Key
+                                </button>
+                            </div>
+                            
+                            <div id="apiStatus" class="status-message"></div>
+                        </div>
+                    </div>
+
+                    <!-- Application Settings -->
+                    <div class="settings-section">
+                        <h3 class="section-title">🎛️ Application Settings</h3>
+                        
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Default Model</h4>
+                                <p>Choose the default AI model for invoice analysis</p>
+                            </div>
+                            <select id="defaultModel" class="model-select">
+                                <option value="models/gemma-3-27b-it">Gemma 3 27B IT (Recommended)</option>
+                                <option value="models/gemma-3-12b-it">Gemma 3 12B IT (Balanced)</option>
+                                <option value="models/gemma-3-4b-it">Gemma 3 4B IT (Fast)</option>
+                                <option value="models/gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                                <option value="models/gemini-2.5-flash-preview">Gemini 2.5 Flash (Preview)</option>
+                            </select>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Auto-save Results</h4>
+                                <p>Automatically save analysis results to browser storage</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="autoSave" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+
+                        <div class="setting-item">
+                            <div class="setting-info">
+                                <h4>Show Confidence Scores</h4>
+                                <p>Display confidence percentages for extracted data</p>
+                            </div>
+                            <label class="toggle-switch">
+                                <input type="checkbox" id="showConfidence" checked>
+                                <span class="slider"></span>
+                            </label>
+                        </div>
+                    </div>
+
+                    <!-- Data Management -->
+                    <div class="settings-section">
+                        <h3 class="section-title">🗂️ Data Management</h3>
+                        
+                        <div class="button-group">
+                            <button type="button" id="exportSettings" class="btn-secondary">
+                                📤 Export Settings
+                            </button>
+                            <button type="button" id="importSettings" class="btn-secondary">
+                                📥 Import Settings
+                            </button>
+                            <button type="button" id="clearData" class="btn-danger">
+                                🗑️ Clear All Data
+                            </button>
+                        </div>
+                    </div>
+
+                    <!-- About -->
+                    <div class="settings-section">
+                        <h3 class="section-title">ℹ️ About</h3>
+                        <div class="about-info">
+                            <p><strong>Version:</strong> 1.0.0</p>
+                            <p><strong>Built with:</strong> Flask, Google Generative AI, Inter Font</p>
+                            <p><strong>License:</strong> MIT</p>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <style>
+        .settings-container {
+            max-width: 800px;
+            margin: 0 auto;
+        }
+
+        .settings-panel {
+            background: var(--background);
+            border-radius: var(--radius-xl);
+            border: 1px solid var(--border);
+            padding: 2rem;
+            box-shadow: var(--shadow-sm);
+        }
+
+        .settings-section {
+            margin-bottom: 2rem;
+            padding-bottom: 2rem;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .settings-section:last-child {
+            border-bottom: none;
+            margin-bottom: 0;
+        }
+
+        .section-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: var(--text-primary);
+            margin-bottom: 0.5rem;
+        }
+
+        .section-description {
+            color: var(--text-secondary);
+            font-size: 0.875rem;
+            margin-bottom: 1.5rem;
+            line-height: 1.5;
+        }
+
+        .link {
+            color: var(--primary);
+            text-decoration: none;
+        }
+
+        .link:hover {
+            text-decoration: underline;
+        }
+
+        .api-key-form {
+            background: var(--background-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .input-group {
+            position: relative;
+            display: flex;
+            align-items: center;
+        }
+
+        .api-input {
+            width: 100%;
+            padding: 1rem;
+            padding-right: 3rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-family: 'Courier New', monospace;
+            background: var(--background);
+        }
+
+        .api-input:focus {
+            outline: none;
+            border-color: var(--primary);
+            box-shadow: 0 0 0 3px rgba(37, 99, 235, 0.1);
+        }
+
+        .toggle-btn {
+            position: absolute;
+            right: 0.75rem;
+            background: none;
+            border: none;
+            cursor: pointer;
+            font-size: 1rem;
+            color: var(--text-muted);
+            padding: 0.5rem;
+            border-radius: var(--radius-sm);
+            transition: color 0.2s ease;
+        }
+
+        .toggle-btn:hover {
+            color: var(--text-secondary);
+        }
+
+        .button-group {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+            flex-wrap: wrap;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary:hover:not(:disabled) {
+            background: var(--primary-dark);
+            transform: translateY(-1px);
+        }
+
+        .btn-primary:disabled {
+            opacity: 0.6;
+            cursor: not-allowed;
+            transform: none;
+        }
+
+        .btn-danger {
+            background: var(--error);
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.2s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .btn-danger:hover:not(:disabled) {
+            background: #dc2626;
+            transform: translateY(-1px);
+        }
+
+        .status-message {
+            margin-top: 1rem;
+            padding: 0.75rem 1rem;
+            border-radius: var(--radius-md);
+            font-size: 0.875rem;
+            display: none;
+        }
+
+        .status-message.success {
+            background: rgba(16, 185, 129, 0.1);
+            border: 1px solid rgba(16, 185, 129, 0.2);
+            color: var(--success);
+        }
+
+        .status-message.error {
+            background: rgba(239, 68, 68, 0.1);
+            border: 1px solid rgba(239, 68, 68, 0.2);
+            color: var(--error);
+        }
+
+        .status-message.info {
+            background: rgba(37, 99, 235, 0.1);
+            border: 1px solid rgba(37, 99, 235, 0.2);
+            color: var(--primary);
+        }
+
+        .setting-item {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            padding: 1rem 0;
+            border-bottom: 1px solid var(--border-light);
+        }
+
+        .setting-item:last-child {
+            border-bottom: none;
+        }
+
+        .setting-info h4 {
+            font-size: 1rem;
+            font-weight: 500;
+            color: var(--text-primary);
+            margin-bottom: 0.25rem;
+        }
+
+        .setting-info p {
+            font-size: 0.875rem;
+            color: var(--text-secondary);
+        }
+
+        .model-select {
+            padding: 0.5rem 1rem;
+            border: 1px solid var(--border);
+            border-radius: var(--radius-md);
+            background: var(--background);
+            color: var(--text-primary);
+            font-size: 0.875rem;
+            min-width: 200px;
+        }
+
+        .model-select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .toggle-switch {
+            position: relative;
+            display: inline-block;
+            width: 50px;
+            height: 24px;
+        }
+
+        .toggle-switch input {
+            opacity: 0;
+            width: 0;
+            height: 0;
+        }
+
+        .slider {
+            position: absolute;
+            cursor: pointer;
+            top: 0;
+            left: 0;
+            right: 0;
+            bottom: 0;
+            background-color: var(--border);
+            transition: 0.3s;
+            border-radius: 24px;
+        }
+
+        .slider:before {
+            position: absolute;
+            content: "";
+            height: 18px;
+            width: 18px;
+            left: 3px;
+            bottom: 3px;
+            background-color: white;
+            transition: 0.3s;
+            border-radius: 50%;
+        }
+
+        input:checked + .slider {
+            background-color: var(--primary);
+        }
+
+        input:checked + .slider:before {
+            transform: translateX(26px);
+        }
+
+        .about-info {
+            background: var(--background-light);
+            border-radius: var(--radius-lg);
+            padding: 1.5rem;
+            border: 1px solid var(--border-light);
+        }
+
+        .about-info p {
+            margin: 0.5rem 0;
+            color: var(--text-secondary);
+        }
+
+        .nav-actions .btn-secondary.active {
+            background: var(--primary);
+            color: white;
+            border-color: var(--primary);
+        }
+
+        @media (max-width: 768px) {
+            .settings-panel {
+                padding: 1.5rem;
+            }
+
+            .button-group {
+                flex-direction: column;
+            }
+
+            .setting-item {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+
+            .model-select {
+                width: 100%;
+                min-width: auto;
+            }
+        }
+    </style>
+
+    <script>
+        // DOM Elements
+        const apiKeyInput = document.getElementById('apiKey');
+        const toggleBtn = document.getElementById('toggleVisibility');
+        const testBtn = document.getElementById('testApiKey');
+        const saveBtn = document.getElementById('saveApiKey');
+        const statusDiv = document.getElementById('apiStatus');
+        const defaultModelSelect = document.getElementById('defaultModel');
+        const autoSaveToggle = document.getElementById('autoSave');
+        const showConfidenceToggle = document.getElementById('showConfidence');
+        const exportBtn = document.getElementById('exportSettings');
+        const importBtn = document.getElementById('importSettings');
+        const clearBtn = document.getElementById('clearData');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Toggle API key visibility
+        toggleBtn.addEventListener('click', function() {
+            if (apiKeyInput.type === 'password') {
+                apiKeyInput.type = 'text';
+                toggleBtn.textContent = '🙈';
+            } else {
+                apiKeyInput.type = 'password';
+                toggleBtn.textContent = '👁️';
+            }
+        });
+
+        // Test API key
+        testBtn.addEventListener('click', async function() {
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                showStatus('Please enter an API key first', 'error');
+                return;
+            }
+
+            testBtn.disabled = true;
+            testBtn.textContent = '🔄 Testing...';
+            
+            try {
+                const response = await fetch('/test-api-key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ api_key: apiKey })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('✅ ' + data.message, 'success');
+                } else {
+                    showStatus('❌ ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                testBtn.disabled = false;
+                testBtn.textContent = '🧪 Test API Key';
+            }
+        });
+
+        // Save API key
+        saveBtn.addEventListener('click', async function() {
+            const apiKey = apiKeyInput.value.trim();
+            
+            if (!apiKey) {
+                showStatus('Please enter an API key first', 'error');
+                return;
+            }
+
+            saveBtn.disabled = true;
+            saveBtn.textContent = '💾 Saving...';
+            
+            try {
+                const response = await fetch('/save-api-key', {
+                    method: 'POST',
+                    headers: {
+                        'Content-Type': 'application/json',
+                    },
+                    body: JSON.stringify({ api_key: apiKey })
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showStatus('✅ ' + data.message, 'success');
+                    // Save to localStorage as backup
+                    localStorage.setItem('google_api_key', apiKey);
+                } else {
+                    showStatus('❌ ' + data.error, 'error');
+                }
+            } catch (error) {
+                showStatus('❌ Network error. Please try again.', 'error');
+            } finally {
+                saveBtn.disabled = false;
+                saveBtn.textContent = '💾 Save API Key';
+            }
+        });
+
+        // Export settings
+        exportBtn.addEventListener('click', function() {
+            const settings = {
+                defaultModel: defaultModelSelect.value,
+                autoSave: autoSaveToggle.checked,
+                showConfidence: showConfidenceToggle.checked,
+                timestamp: new Date().toISOString()
+            };
+            
+            const blob = new Blob([JSON.stringify(settings, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = 'invoice-extractor-settings.json';
+            a.click();
+            URL.revokeObjectURL(url);
+            
+            showStatus('✅ Settings exported successfully', 'success');
+        });
+
+        // Import settings
+        importBtn.addEventListener('click', function() {
+            const input = document.createElement('input');
+            input.type = 'file';
+            input.accept = '.json';
+            input.onchange = function(e) {
+                const file = e.target.files[0];
+                if (file) {
+                    const reader = new FileReader();
+                    reader.onload = function(e) {
+                        try {
+                            const settings = JSON.parse(e.target.result);
+                            defaultModelSelect.value = settings.defaultModel || 'models/gemma-3-27b-it';
+                            autoSaveToggle.checked = settings.autoSave !== false;
+                            showConfidenceToggle.checked = settings.showConfidence !== false;
+                            showStatus('✅ Settings imported successfully', 'success');
+                        } catch (error) {
+                            showStatus('❌ Invalid settings file', 'error');
+                        }
+                    };
+                    reader.readAsText(file);
+                }
+            };
+            input.click();
+        });
+
+        // Clear all data
+        clearBtn.addEventListener('click', function() {
+            if (confirm('Are you sure you want to clear all data? This action cannot be undone.')) {
+                localStorage.clear();
+                sessionStorage.clear();
+                apiKeyInput.value = '';
+                defaultModelSelect.value = 'models/gemma-3-27b-it';
+                autoSaveToggle.checked = true;
+                showConfidenceToggle.checked = true;
+                showStatus('✅ All data cleared successfully', 'success');
+            }
+        });
+
+        // Save settings to localStorage
+        function saveSettings() {
+            const settings = {
+                defaultModel: defaultModelSelect.value,
+                autoSave: autoSaveToggle.checked,
+                showConfidence: showConfidenceToggle.checked
+            };
+            localStorage.setItem('invoice_extractor_settings', JSON.stringify(settings));
+        }
+
+        // Load settings from localStorage
+        function loadSettings() {
+            const saved = localStorage.getItem('invoice_extractor_settings');
+            if (saved) {
+                try {
+                    const settings = JSON.parse(saved);
+                    defaultModelSelect.value = settings.defaultModel || 'models/gemma-3-27b-it';
+                    autoSaveToggle.checked = settings.autoSave !== false;
+                    showConfidenceToggle.checked = settings.showConfidence !== false;
+                } catch (error) {
+                    console.error('Error loading settings:', error);
+                }
+            }
+        }
+
+        // Event listeners for auto-save
+        defaultModelSelect.addEventListener('change', saveSettings);
+        autoSaveToggle.addEventListener('change', saveSettings);
+        showConfidenceToggle.addEventListener('change', saveSettings);
+
+        // Load settings on page load
+        loadSettings();
+
+        // Load API key from localStorage if available
+        const savedApiKey = localStorage.getItem('google_api_key');
+        if (savedApiKey) {
+            apiKeyInput.value = savedApiKey;
+        }
+
+        function showStatus(message, type) {
+            statusDiv.textContent = message;
+            statusDiv.className = `status-message ${type}`;
+            statusDiv.style.display = 'block';
+            
+            setTimeout(() => {
+                statusDiv.style.display = 'none';
+            }, 5000);
+        }
+
+        // Handle window resize for mobile menu
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+    </script>
+</body>
+</html>

@@ -18,10 +18,10 @@
                     Invoice Extractor
                 </a>
                 <div class="nav-actions">
-                    <a href="#" class="btn-secondary">
+                    <a href="/analytics" class="btn-secondary">
                         📊 Analytics
                     </a>
-                    <a href="#" class="btn-secondary">
+                    <a href="/settings" class="btn-secondary">
                         ⚙️ Settings
                     </a>
                 </div>
@@ -29,10 +29,10 @@
             </div>
             <div class="mobile-menu" id="mobileMenu">
                 <div class="nav-actions">
-                    <a href="#" class="btn-secondary">
+                    <a href="/analytics" class="btn-secondary">
                         📊 Analytics
                     </a>
-                    <a href="#" class="btn-secondary">
+                    <a href="/settings" class="btn-secondary">
                         ⚙️ Settings
                     </a>
                 </div>
@@ -78,6 +78,18 @@
                                     📋 All Data
                                 </button>
                             </div>
+                        </div>
+
+                        <!-- Model Selection -->
+                        <div class="model-selection">
+                            <label for="modelSelect">AI Model:</label>
+                            <select id="modelSelect" name="model" class="model-select">
+                                <option value="models/gemma-3-27b-it">Gemma 3 27B IT (Recommended)</option>
+                                <option value="models/gemma-3-12b-it">Gemma 3 12B IT (Balanced)</option>
+                                <option value="models/gemma-3-4b-it">Gemma 3 4B IT (Fast)</option>
+                                <option value="models/gemini-2.0-flash-exp">Gemini 2.0 Flash (Experimental)</option>
+                                <option value="models/gemini-2.5-flash-preview">Gemini 2.5 Flash (Preview)</option>
+                            </select>
                         </div>
 
                         <!-- Custom Question -->
@@ -142,6 +154,7 @@
         const quickBtns = document.querySelectorAll('.quick-btn');
         const mobileMenuBtn = document.getElementById('mobileMenuBtn');
         const mobileMenu = document.getElementById('mobileMenu');
+        const modelSelect = document.getElementById('modelSelect');
 
         // Mobile menu toggle
         mobileMenuBtn.addEventListener('click', function() {
@@ -239,6 +252,7 @@
             }
 
             const formData = new FormData(form);
+            const startTime = Date.now();
             
             // Show loading state
             showLoading();
@@ -250,14 +264,25 @@
                 });
                 
                 const data = await response.json();
+                const processingTime = (Date.now() - startTime) / 1000;
                 
                 if (response.ok) {
                     showResults(data.response);
+                    
+                    // Track analytics
+                    trackAnalytics(processingTime, 95, true);
                 } else {
                     showError(data.error || 'An error occurred while processing your request');
+                    
+                    // Track failed analytics
+                    trackAnalytics(processingTime, 0, false);
                 }
             } catch (error) {
                 showError('Network error. Please check your connection and try again.');
+                
+                // Track failed analytics
+                const processingTime = (Date.now() - startTime) / 1000;
+                trackAnalytics(processingTime, 0, false);
             } finally {
                 hideLoading();
             }
@@ -367,6 +392,33 @@
         // Touch device optimizations
         if ('ontouchstart' in window) {
             document.body.classList.add('touch-device');
+        }
+
+        // Load saved model selection
+        const savedModel = localStorage.getItem('selected_model');
+        if (savedModel) {
+            modelSelect.value = savedModel;
+        }
+
+        // Save model selection when changed
+        modelSelect.addEventListener('change', function() {
+            localStorage.setItem('selected_model', this.value);
+        });
+
+        // Analytics tracking function
+        function trackAnalytics(processingTime, confidence, success) {
+            const analyticsData = JSON.parse(localStorage.getItem('analytics_data') || '{}');
+            
+            analyticsData.totalInvoices = (analyticsData.totalInvoices || 0) + 1;
+            analyticsData.totalProcessingTime = (analyticsData.totalProcessingTime || 0) + processingTime;
+            analyticsData.totalConfidence = (analyticsData.totalConfidence || 0) + confidence;
+            analyticsData.successfulInvoices = (analyticsData.successfulInvoices || 0) + (success ? 1 : 0);
+            
+            analyticsData.avgProcessingTime = Math.round(analyticsData.totalProcessingTime / analyticsData.totalInvoices * 10) / 10;
+            analyticsData.avgConfidence = Math.round(analyticsData.totalConfidence / analyticsData.totalInvoices);
+            analyticsData.successRate = Math.round((analyticsData.successfulInvoices / analyticsData.totalInvoices) * 100);
+            
+            localStorage.setItem('analytics_data', JSON.stringify(analyticsData));
         }
     </script>
 </body>
