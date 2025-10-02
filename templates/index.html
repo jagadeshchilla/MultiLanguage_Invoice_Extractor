@@ -1,0 +1,373 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Invoice Extractor - AI-Powered Document Analysis</title>
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
+    <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="{{ url_for('static', filename='styles.css') }}">
+</head>
+<body>
+    <div class="app-container">
+        <!-- Header -->
+        <header class="header">
+            <div class="header-content">
+                <a href="/" class="logo">
+                    <div class="logo-icon">📄</div>
+                    Invoice Extractor
+                </a>
+                <div class="nav-actions">
+                    <a href="#" class="btn-secondary">
+                        📊 Analytics
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        ⚙️ Settings
+                    </a>
+                </div>
+                <button class="mobile-menu-btn" id="mobileMenuBtn">☰</button>
+            </div>
+            <div class="mobile-menu" id="mobileMenu">
+                <div class="nav-actions">
+                    <a href="#" class="btn-secondary">
+                        📊 Analytics
+                    </a>
+                    <a href="#" class="btn-secondary">
+                        ⚙️ Settings
+                    </a>
+                </div>
+            </div>
+        </header>
+
+        <!-- Main Content -->
+        <main class="main-content">
+            <div class="content-grid">
+                <!-- Upload Panel -->
+                <div class="upload-panel">
+                    <div class="panel-header">
+                        <h2 class="panel-title">Upload Invoice</h2>
+                        <p class="panel-subtitle">Upload an invoice image to extract data and ask questions</p>
+                    </div>
+
+                    <form id="invoiceForm" enctype="multipart/form-data">
+                        <!-- Upload Zone -->
+                        <div class="upload-zone" id="uploadZone">
+                            <input type="file" id="image" name="image" accept="image/jpeg,image/jpg,image/png,image/webp" required>
+                            <div class="upload-icon">📁</div>
+                            <div class="upload-text">Drop your invoice here</div>
+                            <div class="upload-hint">or click to browse • JPG, PNG, WEBP up to 10MB</div>
+                        </div>
+
+                        <!-- Image Preview -->
+                        <div class="image-preview" id="imagePreview"></div>
+
+                        <!-- Quick Actions -->
+                        <div class="quick-actions">
+                            <div class="quick-actions-title">Quick Questions</div>
+                            <div class="quick-actions-grid">
+                                <button type="button" class="quick-btn" data-question="What is the total amount?">
+                                    💰 Total Amount
+                                </button>
+                                <button type="button" class="quick-btn" data-question="Who is the vendor?">
+                                    🏢 Vendor Name
+                                </button>
+                                <button type="button" class="quick-btn" data-question="What is the invoice date?">
+                                    📅 Invoice Date
+                                </button>
+                                <button type="button" class="quick-btn" data-question="Extract all invoice data">
+                                    📋 All Data
+                                </button>
+                            </div>
+                        </div>
+
+                        <!-- Custom Question -->
+                        <div class="custom-question">
+                            <textarea id="input_text" name="input_text" placeholder="Or ask a custom question about your invoice..." required></textarea>
+                        </div>
+
+                        <!-- Analyze Button -->
+                        <button type="submit" class="analyze-btn" id="submitBtn">
+                            <span>🔍</span>
+                            Analyze Invoice
+                        </button>
+                    </form>
+                </div>
+
+                <!-- Results Panel -->
+                <div class="results-panel">
+                    <div class="results-header">
+                        <h2 class="results-title">Analysis Results</h2>
+                        <div class="confidence-badge" id="confidenceBadge" style="display: none;">95% Confidence</div>
+                    </div>
+
+                    <!-- Loading State -->
+                    <div class="loading-state" id="loadingState" style="display: none;">
+                        <div class="spinner"></div>
+                        <div class="loading-text">Processing your invoice...</div>
+                    </div>
+
+                    <!-- Results Content -->
+                    <div class="results-content" id="resultsContent">
+                        <div style="text-align: center; padding: 3rem 2rem; color: var(--text-muted);">
+                            <div style="font-size: 3rem; margin-bottom: 1rem;">📊</div>
+                            <h3 style="margin-bottom: 0.5rem; color: var(--text-secondary);">Ready to Analyze</h3>
+                            <p>Upload an invoice and ask questions to get started</p>
+                        </div>
+                    </div>
+
+                    <!-- Error State -->
+                    <div class="error-state" id="errorState" style="display: none;">
+                        <div class="error-icon">⚠️</div>
+                        <div class="error-title">Analysis Failed</div>
+                        <div class="error-message" id="errorMessage">Something went wrong. Please try again.</div>
+                    </div>
+                </div>
+            </div>
+        </main>
+    </div>
+
+    <script>
+        // DOM Elements
+        const form = document.getElementById('invoiceForm');
+        const fileInput = document.getElementById('image');
+        const uploadZone = document.getElementById('uploadZone');
+        const imagePreview = document.getElementById('imagePreview');
+        const inputText = document.getElementById('input_text');
+        const submitBtn = document.getElementById('submitBtn');
+        const loadingState = document.getElementById('loadingState');
+        const resultsContent = document.getElementById('resultsContent');
+        const errorState = document.getElementById('errorState');
+        const errorMessage = document.getElementById('errorMessage');
+        const confidenceBadge = document.getElementById('confidenceBadge');
+        const quickBtns = document.querySelectorAll('.quick-btn');
+        const mobileMenuBtn = document.getElementById('mobileMenuBtn');
+        const mobileMenu = document.getElementById('mobileMenu');
+
+        // Mobile menu toggle
+        mobileMenuBtn.addEventListener('click', function() {
+            mobileMenu.classList.toggle('active');
+        });
+
+        // Close mobile menu when clicking outside
+        document.addEventListener('click', function(e) {
+            if (!mobileMenuBtn.contains(e.target) && !mobileMenu.contains(e.target)) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Quick action buttons
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                // Remove active class from all buttons
+                quickBtns.forEach(b => b.classList.remove('active'));
+                // Add active class to clicked button
+                this.classList.add('active');
+                // Set the question text
+                inputText.value = this.dataset.question;
+                inputText.focus();
+            });
+        });
+
+        // File upload handling
+        fileInput.addEventListener('change', function(e) {
+            const file = e.target.files[0];
+            if (file) {
+                handleFileUpload(file);
+            }
+        });
+
+        // Drag and drop functionality
+        uploadZone.addEventListener('dragover', function(e) {
+            e.preventDefault();
+            this.classList.add('dragover');
+        });
+
+        uploadZone.addEventListener('dragleave', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+        });
+
+        uploadZone.addEventListener('drop', function(e) {
+            e.preventDefault();
+            this.classList.remove('dragover');
+            const files = e.dataTransfer.files;
+            if (files.length > 0) {
+                fileInput.files = files;
+                handleFileUpload(files[0]);
+            }
+        });
+
+        function handleFileUpload(file) {
+            // Validate file type
+            const allowedTypes = ['image/jpeg', 'image/jpg', 'image/png', 'image/webp'];
+            if (!allowedTypes.includes(file.type)) {
+                showError('Please upload a valid image file (JPG, PNG, WEBP)');
+                return;
+            }
+
+            // Validate file size (10MB)
+            if (file.size > 10 * 1024 * 1024) {
+                showError('File size must be less than 10MB');
+                return;
+            }
+
+            // Show preview
+            const reader = new FileReader();
+            reader.onload = function(e) {
+                imagePreview.innerHTML = `
+                    <div class="image-preview">
+                        <img src="${e.target.result}" alt="Uploaded Invoice" style="border-radius: var(--radius-lg);">
+                    </div>
+                `;
+                imagePreview.classList.add('fade-in');
+            };
+            reader.readAsDataURL(file);
+        }
+
+        // Form submission
+        form.addEventListener('submit', async function(e) {
+            e.preventDefault();
+            
+            if (!fileInput.files[0]) {
+                showError('Please upload an invoice image first');
+                return;
+            }
+
+            if (!inputText.value.trim()) {
+                showError('Please enter a question or select a quick action');
+                return;
+            }
+
+            const formData = new FormData(form);
+            
+            // Show loading state
+            showLoading();
+            
+            try {
+                const response = await fetch('/analyze', {
+                    method: 'POST',
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (response.ok) {
+                    showResults(data.response);
+                } else {
+                    showError(data.error || 'An error occurred while processing your request');
+                }
+            } catch (error) {
+                showError('Network error. Please check your connection and try again.');
+            } finally {
+                hideLoading();
+            }
+        });
+
+        function showLoading() {
+            submitBtn.disabled = true;
+            submitBtn.innerHTML = '<span>⏳</span> Analyzing...';
+            loadingState.style.display = 'flex';
+            resultsContent.style.display = 'none';
+            errorState.style.display = 'none';
+            confidenceBadge.style.display = 'none';
+        }
+
+        function hideLoading() {
+            submitBtn.disabled = false;
+            submitBtn.innerHTML = '<span>🔍</span> Analyze Invoice';
+            loadingState.style.display = 'none';
+        }
+
+        function showResults(response) {
+            // Parse markdown content
+            const markdownHtml = marked.parse(response);
+            
+            // Extract summary data for cards (basic extraction)
+            const summaryCards = extractSummaryCards(response);
+            
+            resultsContent.innerHTML = `
+                <div class="slide-up">
+                    ${summaryCards}
+                    <div class="markdown-content">${markdownHtml}</div>
+                </div>
+            `;
+            
+            resultsContent.style.display = 'block';
+            resultsContent.classList.add('active');
+            confidenceBadge.style.display = 'block';
+            errorState.style.display = 'none';
+        }
+
+        function extractSummaryCards(text) {
+            // Basic extraction of key values from the response
+            const totalMatch = text.match(/total[:\s]*[\$₹€]?[\d,]+\.?\d*/i);
+            const vendorMatch = text.match(/vendor[:\s]*([^\n]+)/i);
+            const dateMatch = text.match(/date[:\s]*([^\n]+)/i);
+            
+            let cards = '';
+            
+            if (totalMatch) {
+                cards += `
+                    <div class="summary-card">
+                        <div class="summary-card-value">${totalMatch[0].replace(/total[:\s]*/i, '')}</div>
+                        <div class="summary-card-label">Total Amount</div>
+                    </div>
+                `;
+            }
+            
+            if (vendorMatch) {
+                cards += `
+                    <div class="summary-card">
+                        <div class="summary-card-value">${vendorMatch[1].trim()}</div>
+                        <div class="summary-card-label">Vendor</div>
+                    </div>
+                `;
+            }
+            
+            if (dateMatch) {
+                cards += `
+                    <div class="summary-card">
+                        <div class="summary-card-value">${dateMatch[1].trim()}</div>
+                        <div class="summary-card-label">Date</div>
+                    </div>
+                `;
+            }
+            
+            return cards ? `<div class="summary-cards">${cards}</div>` : '';
+        }
+
+        function showError(message) {
+            errorMessage.textContent = message;
+            errorState.style.display = 'block';
+            resultsContent.style.display = 'none';
+            loadingState.style.display = 'none';
+            confidenceBadge.style.display = 'none';
+        }
+
+        // Auto-resize textarea
+        inputText.addEventListener('input', function() {
+            this.style.height = 'auto';
+            this.style.height = this.scrollHeight + 'px';
+        });
+
+        // Clear quick button selection when typing custom question
+        inputText.addEventListener('input', function() {
+            if (this.value.trim()) {
+                quickBtns.forEach(btn => btn.classList.remove('active'));
+            }
+        });
+
+        // Handle window resize for better mobile experience
+        window.addEventListener('resize', function() {
+            if (window.innerWidth > 768) {
+                mobileMenu.classList.remove('active');
+            }
+        });
+
+        // Touch device optimizations
+        if ('ontouchstart' in window) {
+            document.body.classList.add('touch-device');
+        }
+    </script>
+</body>
+</html>
