@@ -36,10 +36,10 @@ Invoice Extractor is an intelligent web application that leverages Google's Gemm
 - **Multilingual Support**: Process invoices in various languages
 
 ### 📊 **Quick Analysis Options**
-- 💰 **Total Amount** - Instantly extract monetary values with currency
-- 🏢 **Vendor Name** - Identify company/supplier information with contact details
-- 📅 **Invoice Date** - Extract invoice and due dates
-- 📋 **All Data** - **Comprehensive extraction of complete invoice information**
+- 💰 **Total Amount** - Instantly extract monetary values
+- 🏢 **Vendor Name** - Identify company/supplier information  
+- 📅 **Invoice Date** - Extract date information
+- 📋 **All Data** - Comprehensive data extraction
 
 ### 🎨 **Modern Interface**
 - **Responsive Design** - Works seamlessly on desktop and mobile
@@ -174,32 +174,11 @@ The application is configured for easy deployment on Render:
 ### Basic Invoice Analysis
 1. Upload an invoice image (JPG, PNG, or WEBP)
 2. Select your preferred AI model
-3. Choose a quick action or ask a custom question
-4. Get comprehensive, structured results with all invoice data
-
-### Comprehensive Data Extraction
-The "All Data" option provides complete invoice analysis including:
-
-**📋 Invoice Details**
-- Invoice number, date, due date, payment terms
-
-**🏢 Vendor Information** 
-- Company name, address, contact details, tax ID
-
-**👤 Customer Information**
-- Bill-to name, address, contact information
-
-**💰 Financial Data**
-- Subtotal, tax amounts, total, currency, payment method
-
-**📦 Line Items**
-- Item descriptions, quantities, unit prices, totals
-
-**📝 Additional Information**
-- Notes, shipping details, reference numbers
+3. Choose a quick question or ask a custom question
+4. Get instant, accurate results
 
 ### Custom Queries
-You can also ask specific questions like:
+Beyond the quick questions, you can ask custom questions like:
 - "What is the payment terms?"
 - "List all line items with quantities"
 - "What is the tax amount?"

@@ -76,111 +76,6 @@ def test_api_key():
     except Exception as e:
         return jsonify({'error': f'API key test failed: {str(e)}'}), 400
 
-@app.route('/quick-analyze', methods=['POST'])
-def quick_analyze():
-    """Handle quick analysis requests (Total Amount, Vendor Name, etc.)"""
-    try:
-        uploaded_file = request.files['image']
-        analysis_type = request.form.get('analysis_type', 'all_data')
-        selected_model = request.form.get('model', 'models/gemma-3-27b-it')
-        
-        if not uploaded_file:
-            return jsonify({'error': 'No image uploaded'}), 400
-        
-        # Get API key from session or environment
-        api_key = session.get('google_api_key') or os.getenv("GOOGLE_API_KEY")
-        
-        if not api_key:
-            return jsonify({'error': 'No API key configured. Please go to Settings to add your Google API key.'}), 400
-        
-        # Configure genai with the API key
-        genai.configure(api_key=api_key)
-        
-        # Create model instance with selected model
-        model = genai.GenerativeModel(selected_model)
-        
-        # Process the image
-        image_data = input_image_setup(uploaded_file)
-        
-        # Define prompts based on analysis type
-        prompts = {
-            'total_amount': """
-            Analyze this invoice and extract the total amount. Include:
-            - Total amount (final amount to be paid)
-            - Currency
-            - Any breakdown of subtotal, tax, and total
-            Format: "Total Amount: [amount] [currency]"
-            """,
-            'vendor_name': """
-            Analyze this invoice and extract vendor information:
-            - Vendor/Company name
-            - Business address
-            - Contact details
-            Format as: "Vendor: [company name]"
-            """,
-            'invoice_date': """
-            Analyze this invoice and extract date information:
-            - Invoice date
-            - Due date
-            - Any other relevant dates
-            Format as: "Invoice Date: [date]"
-            """,
-            'all_data': """
-            You are an expert invoice analyst. Analyze this invoice image and extract ALL available information in a structured format.
-            
-            Please provide a comprehensive analysis including:
-            
-            **INVOICE DETAILS:**
-            - Invoice Number
-            - Invoice Date
-            - Due Date
-            - Payment Terms
-            
-            **VENDOR INFORMATION:**
-            - Vendor/Company Name
-            - Vendor Address
-            - Contact Information
-            - Tax ID/VAT Number
-            
-            **CUSTOMER INFORMATION:**
-            - Customer/Bill To Name
-            - Customer Address
-            - Customer Contact Information
-            
-            **FINANCIAL INFORMATION:**
-            - Subtotal Amount
-            - Tax Amount and Rate
-            - Total Amount
-            - Currency
-            - Payment Method
-            
-            **LINE ITEMS:**
-            - Item Descriptions
-            - Quantities
-            - Unit Prices
-            - Line Totals
-            
-            **ADDITIONAL INFORMATION:**
-            - Any notes or comments
-            - Shipping information
-            - Reference numbers
-            - Any other relevant details visible on the invoice
-            
-            Format your response in a clear, organized manner with proper headings and bullet points.
-            If any information is not clearly visible or readable, please mention "Not clearly visible" for that field.
-            """
-        }
-        
-        input_prompt = prompts.get(analysis_type, prompts['all_data'])
-        
-        # Get response from the model
-        response = model.generate_content([input_prompt, image_data])
-        
-        return jsonify({'response': response.text})
-        
-    except Exception as e:
-        return jsonify({'error': str(e)}), 500
-
 @app.route('/analyze', methods=['POST'])
 def analyze_invoice():
     try:
@@ -207,60 +102,11 @@ def analyze_invoice():
         # Process the image
         image_data = input_image_setup(uploaded_file)
         
-        # Define comprehensive extraction prompt
-        if input_text.strip():
-            # If specific question is asked, use it
-            input_prompt = f"""
-            You are an expert invoice analyst. Analyze this invoice image and provide a detailed answer to: "{input_text}"
-            
-            Please provide a comprehensive response that includes all relevant information from the invoice.
-            """
-        else:
-            # Default comprehensive extraction
-            input_prompt = """
-            You are an expert invoice analyst. Analyze this invoice image and extract ALL available information in a structured format.
-            
-            Please provide a comprehensive analysis including:
-            
-            **INVOICE DETAILS:**
-            - Invoice Number
-            - Invoice Date
-            - Due Date
-            - Payment Terms
-            
-            **VENDOR INFORMATION:**
-            - Vendor/Company Name
-            - Vendor Address
-            - Contact Information
-            - Tax ID/VAT Number
-            
-            **CUSTOMER INFORMATION:**
-            - Customer/Bill To Name
-            - Customer Address
-            - Customer Contact Information
-            
-            **FINANCIAL INFORMATION:**
-            - Subtotal Amount
-            - Tax Amount and Rate
-            - Total Amount
-            - Currency
-            - Payment Method
-            
-            **LINE ITEMS:**
-            - Item Descriptions
-            - Quantities
-            - Unit Prices
-            - Line Totals
-            
-            **ADDITIONAL INFORMATION:**
-            - Any notes or comments
-            - Shipping information
-            - Reference numbers
-            - Any other relevant details visible on the invoice
-            
-            Format your response in a clear, organized manner with proper headings and bullet points.
-            If any information is not clearly visible or readable, please mention "Not clearly visible" for that field.
-            """
+        # Define the prompt
+        input_prompt = """
+        you are an expert in understanding invoices. We will upload an image as invoice
+        and you will have to answer any questions based on the uploaded invoice image
+        """
         
         # Get response from the model
         response = model.generate_content([input_prompt, image_data])
