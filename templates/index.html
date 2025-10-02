@@ -175,9 +175,16 @@
                 quickBtns.forEach(b => b.classList.remove('active'));
                 // Add active class to clicked button
                 this.classList.add('active');
-                // Set the question text
-                inputText.value = this.dataset.question;
-                inputText.focus();
+                
+                // Clear custom question for quick actions
+                inputText.value = '';
+                
+                // Store the analysis type for quick actions
+                const analysisType = this.dataset.question.includes('total amount') ? 'total_amount' :
+                                   this.dataset.question.includes('vendor') ? 'vendor_name' :
+                                   this.dataset.question.includes('date') ? 'invoice_date' : 'all_data';
+                
+                this.dataset.analysisType = analysisType;
             });
         });
 
@@ -246,19 +253,31 @@
                 return;
             }
 
-            if (!inputText.value.trim()) {
-                showError('Please enter a question or select a quick action');
+            // Check if a quick action is selected or custom question is provided
+            const activeQuickBtn = document.querySelector('.quick-btn.active');
+            const hasCustomQuestion = inputText.value.trim();
+            
+            if (!activeQuickBtn && !hasCustomQuestion) {
+                showError('Please select a quick action or enter a custom question');
                 return;
             }
 
             const formData = new FormData(form);
             const startTime = Date.now();
             
+            // Determine which endpoint to use
+            let endpoint = '/analyze';
+            if (activeQuickBtn && !hasCustomQuestion) {
+                // Use quick-analyze endpoint for quick actions
+                endpoint = '/quick-analyze';
+                formData.append('analysis_type', activeQuickBtn.dataset.analysisType);
+            }
+            
             // Show loading state
             showLoading();
             
             try {
-                const response = await fetch('/analyze', {
+                const response = await fetch(endpoint, {
                     method: 'POST',
                     body: formData
                 });
@@ -380,6 +399,13 @@
             if (this.value.trim()) {
                 quickBtns.forEach(btn => btn.classList.remove('active'));
             }
+        });
+        
+        // Clear custom question when quick button is selected
+        quickBtns.forEach(btn => {
+            btn.addEventListener('click', function() {
+                inputText.value = '';
+            });
         });
 
         // Handle window resize for better mobile experience
