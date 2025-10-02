@@ -9,7 +9,7 @@ import io
 import base64
 
 app = Flask(__name__, static_folder='static')
-app.secret_key = os.getenv('SECRET_KEY', 'your-secret-key-change-this-in-production')
+app.secret_key = 'your-secret-key-change-this-in-production'
 
 genai.configure(api_key=os.getenv("GOOGLE_API_KEY"))
 
@@ -117,6 +117,5 @@ def analyze_invoice():
         return jsonify({'error': str(e)}), 500
 
 if __name__ == '__main__':
-    port = int(os.getenv('PORT', 5000))
-    debug = os.getenv('FLASK_ENV') == 'development'
-    app.run(host='0.0.0.0', port=port, debug=debug)
+    port = int(os.environ.get('PORT', 5000))
+    app.run(host='0.0.0.0', port=port, debug=False)

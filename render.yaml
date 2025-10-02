@@ -1,25 +1,13 @@
 services:
   - type: web
-    name: invoice-analyzer-app
-    env: docker
-    dockerfilePath: ./Dockerfile
-    dockerContext: .
+    name: invoice-analyzer
+    env: python
     plan: free
-    region: oregon
-    branch: main
-    buildCommand: ""
-    startCommand: ""
-    healthCheckPath: /
+    buildCommand: pip install -r requirements.txt
+    startCommand: gunicorn app:app
     envVars:
+      - key: PYTHON_VERSION
+        value: 3.10.0
       - key: GOOGLE_API_KEY
         sync: false
-      - key: FLASK_ENV
-        value: production
-      - key: PORT
-        value: 5000
-    autoDeploy: true
-    pullRequestPreviewsEnabled: true
-    disk:
-      name: invoice-analyzer-disk
-      mountPath: /app/data
-      sizeGB: 1
+    healthCheckPath: /
