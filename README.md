@@ -209,14 +209,6 @@ We welcome contributions! Here's how you can help:
 - **Input Sanitization**: Protection against malicious uploads
 - **HTTPS Support**: Secure data transmission
 
-## 📞 Support
-
-For questions, issues, or feature requests:
-- 📧 **Email**: support@invoiceextractor.com
-- 🐛 **Issues**: [GitHub Issues](https://github.com/yourusername/invoice-extractor/issues)
-- 💬 **Discussions**: [GitHub Discussions](https://github.com/yourusername/invoice-extractor/discussions)
-
----
 
 <div align="center">
 
